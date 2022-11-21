@@ -33,41 +33,29 @@ async function script() {
     try {
       await page.goto(`https://mit.s.dk/studiebolig/building/${point.pk}/`)
 
-      const name = await page.evaluate(() => {
-        return document.querySelector("body > main > form > header > h1")
-          ?.textContent
-      })
-
       const numberOfGroups = await page.evaluate(() => {
         return document.querySelectorAll("#buildingGroups > div").length
       })
 
       if (numberOfGroups > 0) {
-        console.log(`Found a building with groups (${name})`)
-
         for (let i = 0; i < numberOfGroups; i++) {
-          console.log("Clicking on group", i + 1)
-          try {
-            const heading = `#buildingGroups > .card > #heading-${
-              i + 1
-            } > .group-toggle-header > .group-toggle-link`
-            await page.waitForSelector(heading)
-            await page.click(heading)
+          const heading = `#buildingGroups > .card > #heading-${
+            i + 1
+          } > .group-toggle-header > .group-toggle-link`
+          await page.waitForSelector(heading)
+          await page.click(heading)
 
-            const button = `.card > #collapse-${i + 1} > div > #group-actions-${
-              i + 1
-            } > .btn`
-            const buttonExists = await page.evaluate((button) => {
-              return document.querySelector(button) !== null
-            }, button)
+          const button = `.card > #collapse-${i + 1} > div > #group-actions-${
+            i + 1
+          } > .btn`
+          const buttonExists = await page.evaluate((button) => {
+            return document.querySelector(button) !== null
+          }, button)
 
-            if (buttonExists) {
-              await page.waitForSelector(button)
-              await page.click(button)
-              await page.waitForNavigation()
-            }
-          } catch (e) {
-            continue
+          if (buttonExists) {
+            await page.waitForSelector(button)
+            await page.click(button)
+            await page.waitForNavigation()
           }
         }
       }
